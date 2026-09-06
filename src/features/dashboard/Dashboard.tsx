@@ -40,7 +40,7 @@ const CHART_LABELS: Partial<Record<InstrumentSymbol, string>> = {
   "^NDX": "Nasdaq 100",
   "^RUT": "Russell 2000",
   "^DJI": "Dow Jones",
-  "^SP500EW": "S&P 500 Equal Weight",
+  "^SP500EW": "S&P 500 EW",
 };
 const getChartLabel = (symbol: InstrumentSymbol) => CHART_LABELS[symbol] ?? symbol;
 const RATIO_SECTIONS: readonly { label: string; categories: readonly string[] }[] = [

@@ -17,7 +17,7 @@ const CHART_LABELS: Partial<Record<InstrumentSymbol, string>> = {
   "^NDX": "Nasdaq 100",
   "^RUT": "Russell 2000",
   "^DJI": "Dow Jones",
-  "^SP500EW": "S&P 500 Equal Weight",
+  "^SP500EW": "S&P 500 EW",
 };
 
 export type TimeRange = "1W" | "1M" | "3M" | "6M" | "1Y" | "3Y" | "5Y" | "10Y" | "ALL";
