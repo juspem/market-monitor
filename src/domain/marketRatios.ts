@@ -15,7 +15,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     id: "sp500ew-gspc",
     numerator: "^SP500EW",
     denominator: "^GSPC",
-    label: "S&P 500 Equal Weight / S&P 500",
+    label: "S&P 500 EW / S&P 500",
     category: "Breadth",
     meaning: "Equal-weight breadth versus the S&P 500",
     marketInterpretation: "Rising suggests broader participation beyond mega-cap leaders and healthier market breadth; Falling suggests leadership is narrowing into the largest companies.",

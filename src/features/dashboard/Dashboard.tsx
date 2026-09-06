@@ -15,7 +15,7 @@ const INDEX_LABELS: Record<InstrumentSymbol, string> = {
   "^NDX": "Nasdaq 100 (^NDX)",
   "^RUT": "Russell 2000 (^RUT)",
   "^DJI": "Dow Jones (^DJI)",
-  "^SP500EW": "S&P 500 Equal Weight (^SP500EW)",
+  "^SP500EW": "S&P 500 EW (^SP500EW)",
   HYG: "High Yield Bonds (HYG)",
   TLT: "20+ Year Treasuries (TLT)",
   IEF: "7-10 Year Treasuries (IEF)",
