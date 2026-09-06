@@ -1,0 +1,23 @@
+# Dependencies and build output
+node_modules/
+dist/
+.vite/
+src-tauri/target/
+src-tauri/gen/
+*.tsbuildinfo
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# Local logs and reports
+*.log
+coverage/
+
+# Editor and operating system files
+.idea/
+*.user
+*.suo
+Thumbs.db
+.DS_Store
