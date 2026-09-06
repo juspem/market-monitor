@@ -54,4 +54,4 @@ The app fetches daily data from Yahoo Finance. The selected instruments are main
 
 ## Notes
 
-This is a lightweight tool for personal use. Data may be delayed, and Yahoo Finance may rate-limit requests. Tests use mock data and do not call the live API.
+This is a lightweight tool for personal use. Data may be delayed, and Yahoo Finance may rate-limit requests.
