@@ -22,11 +22,26 @@ const MARKET_HOLIDAYS = new Set([
   "2026-12-25",
 ]);
 const BASE_PRICES: Record<InstrumentSymbol, number> = {
-  SPY: 580,
-  QQQ: 510,
-  IWM: 225,
-  DIA: 430,
-  RSP: 185,
+  "^GSPC": 5600,
+  "^NDX": 19750,
+  "^RUT": 2180,
+  "^DJI": 38500,
+  "^SP500EW": 165,
+  HYG: 78,
+  TLT: 90,
+  IEF: 93,
+  DBC: 25,
+  GLD: 240,
+  USO: 75,
+  SLV: 28,
+  UNG: 14,
+  UUP: 29,
+  EEM: 42,
+  VNQ: 92,
+  "^VIX": 18,
+  "^W5000": 77000,
+  PSP: 62,
+  XLE: 64,
 };
 
 function createTradingDates(count: number): string[] {
@@ -122,4 +137,3 @@ export const mockMarketData: MarketDataProvider = {
   },
 };
 
-export const defaultMockSeries = INSTRUMENTS.map(createSeries);

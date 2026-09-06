@@ -8,7 +8,7 @@ const point = (tradingDate: string, close: number) => ({
   close,
 });
 
-const series = (symbol: "RSP" | "SPY", points: ReturnType<typeof point>[]) => ({
+const series = (symbol: "^SP500EW" | "^GSPC", points: ReturnType<typeof point>[]) => ({
   symbol,
   points,
   missingDates: [],
@@ -45,21 +45,21 @@ describe("normalizePerformance", () => {
 describe("calculateRatio", () => {
   it("uses only matching trading dates", () => {
     const result = calculateRatio(
-      series("RSP", [point("2026-01-02", 100), point("2026-01-06", 110)]),
-      series("SPY", [point("2026-01-02", 200)]),
+      series("^SP500EW", [point("2026-01-02", 100), point("2026-01-06", 110)]),
+      series("^GSPC", [point("2026-01-02", 200)]),
     );
     expect(result).toHaveLength(1);
     expect(result[0]?.ratio).toBe(0.5);
   });
 
-  it("omits dates missing from either RSP or SPY", () => {
+  it("omits dates missing from either ^RSP or ^GSPC", () => {
     const result = calculateRatio(
-      series("RSP", [
+      series("^SP500EW", [
         point("2026-01-02", 100),
         point("2026-01-05", 105),
         point("2026-01-06", 110),
       ]),
-      series("SPY", [
+      series("^GSPC", [
         point("2026-01-02", 200),
         point("2026-01-06", 220),
       ]),
@@ -70,17 +70,17 @@ describe("calculateRatio", () => {
 
   it("does not match points with different trading dates", () => {
     const result = calculateRatio(
-      series("RSP", [point("2026-01-05", 105)]),
-      series("SPY", [point("2026-01-06", 210)]),
+      series("^SP500EW", [point("2026-01-05", 105)]),
+      series("^GSPC", [point("2026-01-06", 210)]),
     );
 
     expect(result).toEqual([]);
   });
 
-  it("omits a matching date when SPY has a zero close", () => {
+  it("omits a matching date when ^GSPC has a zero close", () => {
     const result = calculateRatio(
-      series("RSP", [point("2026-01-02", 100)]),
-      series("SPY", [point("2026-01-02", 0)]),
+      series("^SP500EW", [point("2026-01-02", 100)]),
+      series("^GSPC", [point("2026-01-02", 0)]),
     );
 
     expect(result).toEqual([]);

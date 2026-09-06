@@ -3,7 +3,6 @@
 - **Market Architect**: architecture and technical boundaries
 - **Market Data**: providers, timestamps, calculations, and data quality
 - **Market Chart**: Lightweight Charts and dashboard interactions
-- **Tauri Desktop**: Windows integration and packaging
 - **Market Quality**: tests and release validation
 - **Market Auditor**: independent read-only correctness and security audit
 

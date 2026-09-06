@@ -1,12 +1,12 @@
 # Market Analysis Project Instructions
 
 ## Project goal
-Build a lightweight Windows desktop application for quickly reviewing broad market conditions, index relationships, relative strength, and normalized performance.
+Build a lightweight market dashboard for quickly reviewing broad market conditions, index relationships, relative strength, and normalized performance.
 
 ## Technology direction
-- Use Tauri, React, and TypeScript.
+- Use React and TypeScript.
 - Use Lightweight Charts for interactive charts.
-- Keep market-data access, calculations, chart rendering, and desktop integration separate.
+- Keep market-data access, calculations, and chart rendering separate.
 - Prefer small, testable modules over broad components.
 
 ## Domain rules

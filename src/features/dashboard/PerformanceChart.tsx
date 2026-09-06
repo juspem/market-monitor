@@ -3,50 +3,63 @@ import { ColorType, CrosshairMode, LineSeries, createChart } from "lightweight-c
 import type { NormalizedPoint } from "../../calculations/normalizePerformance";
 import type { InstrumentSymbol } from "../../domain/instruments";
 
-const COLORS: Record<InstrumentSymbol, string> = {
-  SPY: "#1d6fa5",
-  QQQ: "#d97706",
-  IWM: "#087f5b",
-  DIA: "#c2410c",
-  RSP: "#7c3aed",
+const COLORS: Partial<Record<InstrumentSymbol, string>> = {
+  "^GSPC": "#1d6fa5",
+  "^NDX": "#d97706",
+  "^RUT": "#087f5b",
+  "^DJI": "#c2410c",
+  "^SP500EW": "#7c3aed",
+  "^VIX": "#f43f5e",
 };
+
+const CHART_LABELS: Partial<Record<InstrumentSymbol, string>> = {
+  "^GSPC": "S&P 500",
+  "^NDX": "Nasdaq 100",
+  "^RUT": "Russell 2000",
+  "^DJI": "Dow Jones",
+  "^SP500EW": "S&P 500 Equal Weight",
+};
+
+export type TimeRange = "1W" | "1M" | "3M" | "6M" | "1Y" | "3Y" | "5Y" | "10Y" | "ALL";
+
+export const TIME_RANGES: readonly { label: TimeRange; points: number | null }[] = [
+  { label: "1W", points: 5 },
+  { label: "1M", points: 21 },
+  { label: "3M", points: 63 },
+  { label: "6M", points: 126 },
+  { label: "1Y", points: 252 },
+  { label: "3Y", points: 756 },
+  { label: "5Y", points: 1260 },
+  { label: "10Y", points: 2520 },
+  { label: "ALL", points: null },
+];
 
 type Props = {
   series: Partial<Record<InstrumentSymbol, NormalizedPoint[]>>;
   selectedInstrument: InstrumentSymbol;
+  selectedRange: TimeRange;
+  onRangeChange: (range: TimeRange) => void;
 };
 
-type TimeRange = "1M" | "3M" | "ALL";
-
-const TIME_RANGES: readonly { label: TimeRange; points: number | null }[] = [
-  { label: "1M", points: 21 },
-  { label: "3M", points: 63 },
-  { label: "ALL", points: null },
-];
-
-function applyTimeRange(
-  chart: ReturnType<typeof createChart>,
-  selectedRange: TimeRange,
-  pointCount: number,
-) {
+function applyTimeRange(chart: ReturnType<typeof createChart>, selectedRange: TimeRange, lastTradingDate: string) {
   const range = TIME_RANGES.find((item) => item.label === selectedRange);
-  if (!range?.points || range.points >= pointCount) {
+  if (!range?.points) {
     chart.timeScale().fitContent();
     return;
   }
 
-  chart.timeScale().setVisibleLogicalRange({
-    from: Math.max(0, pointCount - range.points),
-    to: pointCount - 1,
+  const end = new Date(`${lastTradingDate}T00:00:00.000Z`);
+  end.setUTCDate(end.getUTCDate() - range.points);
+  chart.timeScale().setVisibleRange({
+    from: end.toISOString().slice(0, 10),
+    to: lastTradingDate,
   });
 }
 
-export function PerformanceChart({ series, selectedInstrument }: Props) {
+export function PerformanceChart({ series, selectedInstrument, selectedRange, onRangeChange }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<ReturnType<typeof createChart> | null>(null);
-  const pointCountRef = useRef(0);
-  const [selectedRange, setSelectedRange] = useState<TimeRange>("3M");
+  const lastTradingDateRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -70,62 +83,45 @@ export function PerformanceChart({ series, selectedInstrument }: Props) {
       timeScale: { borderColor: "#cbd5e1" },
     });
 
-    let pointCount = 0;
+    let lastTradingDate: string | null = null;
     Object.entries(series).forEach(([symbol, points]) => {
       if (!points?.length) {
         return;
       }
 
-      pointCount = Math.max(pointCount, points.length);
+      const seriesLastDate = points.at(-1)?.tradingDate;
+      if (seriesLastDate && (!lastTradingDate || seriesLastDate > lastTradingDate)) {
+        lastTradingDate = seriesLastDate;
+      }
 
       const line = chart.addSeries(LineSeries, {
-        color: COLORS[symbol as InstrumentSymbol],
+        color: COLORS[symbol as InstrumentSymbol] ?? "#64748b",
         lineWidth: symbol === selectedInstrument ? 3 : 1,
         priceLineVisible: false,
-        title: symbol,
+        title: CHART_LABELS[symbol as InstrumentSymbol] ?? symbol,
       });
       line.setData(points.map((point) => ({ time: point.tradingDate, value: point.normalized })));
     });
 
     chartRef.current = chart;
-    pointCountRef.current = pointCount;
-    applyTimeRange(chart, selectedRange, pointCount);
-
-    const handleCrosshairMove = (param: Parameters<typeof chart.subscribeCrosshairMove>[0] extends never ? never : (value: Parameters<typeof chart.subscribeCrosshairMove>[0]) => void) => {
-      const tooltip = tooltipRef.current;
-      if (!tooltip || !param.point || !param.time || param.point.x < 0 || param.point.y < 0) {
-        if (tooltip) tooltip.hidden = true;
-        return;
-      }
-
-      const values = Object.entries(param.seriesData)
-        .map(([symbol, value]) => {
-          const numericValue = "value" in value ? value.value : undefined;
-          return numericValue === undefined ? "" : `<span><i style="background:${COLORS[symbol as InstrumentSymbol]}"></i>${symbol} ${numericValue.toFixed(2)}</span>`;
-        })
-        .filter(Boolean)
-        .join("");
-      tooltip.innerHTML = `<strong>${param.time}</strong>${values}`;
-      tooltip.hidden = false;
-      tooltip.style.left = `${Math.min(param.point.x + 14, containerRef.current!.clientWidth - 150)}px`;
-      tooltip.style.top = `${Math.max(8, param.point.y - 20)}px`;
-    };
-    chart.subscribeCrosshairMove(handleCrosshairMove);
+    lastTradingDateRef.current = lastTradingDate;
+    if (lastTradingDate) {
+      applyTimeRange(chart, selectedRange, lastTradingDate);
+    }
 
     return () => {
-      chart.unsubscribeCrosshairMove(handleCrosshairMove);
       chartRef.current = null;
       chart.remove();
     };
-  }, [selectedInstrument, series, selectedRange]);
+  }, [selectedInstrument, series]);
 
   useEffect(() => {
     const chart = chartRef.current;
-    if (!chart || pointCountRef.current === 0) {
+    if (!chart || !lastTradingDateRef.current) {
       return;
     }
 
-    applyTimeRange(chart, selectedRange, pointCountRef.current);
+    applyTimeRange(chart, selectedRange, lastTradingDateRef.current);
   }, [selectedRange]);
 
   return (
@@ -139,7 +135,7 @@ export function PerformanceChart({ series, selectedInstrument }: Props) {
               className={selectedRange === range.label ? "range-selector__button range-selector__button--active" : "range-selector__button"}
               type="button"
               aria-pressed={selectedRange === range.label}
-              onClick={() => setSelectedRange(range.label)}
+              onClick={() => onRangeChange(range.label)}
             >
               {range.label}
             </button>
@@ -147,7 +143,6 @@ export function PerformanceChart({ series, selectedInstrument }: Props) {
         </div>
       </div>
       <div className="chart-frame chart-frame--interactive" ref={containerRef} aria-label="Normalized performance chart">
-        <div className="chart-tooltip" ref={tooltipRef} hidden />
       </div>
     </>
   );

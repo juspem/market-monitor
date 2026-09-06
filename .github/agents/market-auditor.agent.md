@@ -18,7 +18,7 @@ Find defects, misleading behavior, security risks, and untested assumptions. Do 
 - API credential exposure, unsafe permissions, and insecure storage.
 - Provider limits, retries, caching, and error handling.
 - Chart labels and UI states that could imply false precision.
-- Tauri permissions, packaging, and release configuration.
+- Desktop packaging and release configuration only when relevant to the current runtime.
 - Dependency and configuration risks.
 
 ## Method
