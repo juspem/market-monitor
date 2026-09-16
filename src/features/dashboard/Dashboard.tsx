@@ -72,6 +72,7 @@ export function Dashboard() {
   const [fullHistoryLoaded, setFullHistoryLoaded] = useState(false);
   const [loadedStartDate, setLoadedStartDate] = useState<string>();
   const [loadError, setLoadError] = useState<unknown>();
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     const dataRange = selectedRange === "3M" ? "1Y" : selectedRange;
@@ -111,7 +112,7 @@ export function Dashboard() {
     return () => {
       active = false;
     };
-  }, [fullHistoryLoaded, fullHistoryRequested, loadedStartDate, selectedRange]);
+  }, [fullHistoryLoaded, fullHistoryRequested, loadedStartDate, selectedRange, retryCount]);
 
   const state = getDashboardState(series, loadError, loading && series.length === 0);
 
@@ -148,7 +149,12 @@ export function Dashboard() {
       </header>
 
       {state === "loading" && <p className="dashboard-message">Loading market data...</p>}
-      {state === "error" && <p className="dashboard-message dashboard-message--error">Market data is unavailable.</p>}
+      {state === "error" && (
+        <div className="dashboard-message dashboard-message--error" role="alert">
+          <p>{loadError instanceof Error ? loadError.message : "Market data is unavailable."}</p>
+          <button type="button" onClick={() => setRetryCount((count) => count + 1)}>Retry</button>
+        </div>
+      )}
       {state === "empty" && <p className="dashboard-message">No valid market observations are available.</p>}
 
       {(state === "ready" || state === "stale") && <>

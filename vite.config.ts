@@ -11,6 +11,19 @@ export default defineConfig({
       "/api/yahoo": {
         target: "https://query1.finance.yahoo.com",
         changeOrigin: true,
+        // Yahoo can return 429 immediately for missing or rejected client headers.
+        // Identify the server consistently instead of forwarding the browser's UA.
+        headers: {
+          "User-Agent": "market-monitor/0.1.0",
+          Accept: "application/json",
+        },
+        configure: (proxy) => {
+          proxy.on("proxyReq", (request) => {
+            for (const header of ["cookie", "authorization", "origin", "referer"]) {
+              request.removeHeader(header);
+            }
+          });
+        },
         rewrite: (path) => path.replace(/^\/api\/yahoo\/chart/, "/v8/finance/chart"),
       },
     },

@@ -45,6 +45,12 @@ npm run build
 
 The app fetches daily data from Yahoo Finance. The selected instruments are mainly official indexes and key risk and asset-class ETFs. Data is normalized and compared by trading date so time zones do not distort the comparisons.
 
+Both development and `npm run preview` send requests through `/api/yahoo/chart`. The proxy sets a consistent application User-Agent because Yahoo can reject requests immediately with HTTP 429 based on client headers. It also keeps local cookies and authorization headers from being forwarded to Yahoo.
+
+When deploying the built files, configure a server-side proxy for `/api/yahoo/chart/:symbol` to `https://query1.finance.yahoo.com/v8/finance/chart/:symbol`, preserving query parameters and using the headers configured in `vite.config.ts`. Alternatively, set `VITE_MARKET_DATA_URL` at build time to your own chart proxy. A static file host alone does not provide this route, and direct browser requests to Yahoo are not supported by its CORS response headers.
+
+If Yahoo returns 429, loading stops until you select Retry after the displayed cooldown (at least 60 seconds, longer when Yahoo sends Retry-After). This does not guarantee Yahoo will accept the next request; the upstream restriction can last longer. Restart the development server after changing proxy settings.
+
 ## Structure
 
 - `src/domain`: symbols, data types, and ratio definitions

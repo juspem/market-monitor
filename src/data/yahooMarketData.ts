@@ -1,6 +1,7 @@
 import type { InstrumentSymbol } from "../domain/instruments";
 import type {
   DailyHistoryRequest,
+  DailyHistoryResponse,
   MarketPoint,
   MarketSeries,
 } from "../domain/marketTypes";
@@ -23,16 +24,32 @@ type YahooChartResponse = {
 type FetchLike = typeof fetch;
 
 const YAHOO_CHART_URL = import.meta.env.VITE_MARKET_DATA_URL
-  ?? (import.meta.env.DEV ? "/api/yahoo/chart" : "https://query1.finance.yahoo.com/v8/finance/chart");
+  ?? "/api/yahoo/chart";
 const REQUEST_TIMEOUT_MS = 10_000;
-const MAX_RATE_LIMIT_RETRIES = 3;
+const DEFAULT_RATE_LIMIT_COOLDOWN_MS = 60_000;
 const DEFAULT_TIME_ZONE = "America/New_York";
 
 class YahooRateLimitError extends Error {
-  constructor(status: number) {
-    super(`Yahoo Finance rate limit hit (HTTP ${status})`);
+  constructor(readonly retryAt: number) {
+    const seconds = Math.max(1, Math.ceil((retryAt - Date.now()) / 1000));
+    super(`Yahoo Finance is rate-limiting requests (HTTP 429). Wait at least ${seconds} seconds before retrying.`);
     this.name = "YahooRateLimitError";
   }
+}
+
+function getRetryAt(retryAfter: string | null): number {
+  const now = Date.now();
+  if (retryAfter?.trim()) {
+    const seconds = Number(retryAfter);
+    if (Number.isFinite(seconds) && seconds >= 0) {
+      return now + Math.max(DEFAULT_RATE_LIMIT_COOLDOWN_MS, seconds * 1000);
+    }
+    const date = Date.parse(retryAfter);
+    if (Number.isFinite(date)) {
+      return Math.max(now + DEFAULT_RATE_LIMIT_COOLDOWN_MS, date);
+    }
+  }
+  return now + DEFAULT_RATE_LIMIT_COOLDOWN_MS;
 }
 
 function toTradingDate(timestamp: number, timeZone: string): string {
@@ -71,10 +88,6 @@ function getDefaultEndDate(): string {
 function matchesRequest(point: MarketPoint, request: DailyHistoryRequest): boolean {
   return (!request.startDate || point.tradingDate >= request.startDate)
     && (!request.endDate || point.tradingDate <= request.endDate);
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function parseYahooChartResponse(
@@ -133,7 +146,7 @@ async function fetchJson(fetcher: FetchLike, url: string): Promise<YahooChartRes
     const response = await fetcher(url, { signal: controller.signal });
     if (!response.ok) {
       if (response.status === 429) {
-        throw new YahooRateLimitError(response.status);
+        throw new YahooRateLimitError(getRetryAt(response.headers.get("Retry-After")));
       }
       throw new Error(`Yahoo Finance request failed with HTTP ${response.status}`);
     }
@@ -163,48 +176,71 @@ async function fetchSymbolHistory(
   url.searchParams.set("interval", "1d");
   url.searchParams.set("events", "div,splits");
   url.searchParams.set("includeAdjustedClose", "true");
-  for (let attempt = 1; attempt <= MAX_RATE_LIMIT_RETRIES; attempt += 1) {
-    try {
-      const payload = await fetchJson(fetcher, url.toString());
-      const parsed = parseYahooChartResponse(symbol, payload, fetchedAt);
-      return {
-        ...parsed,
-        points: parsed.points.filter((point) => matchesRequest(point, request)),
-      };
-    } catch (error) {
-      if (error instanceof YahooRateLimitError && attempt < MAX_RATE_LIMIT_RETRIES) {
-        await delay(750 * attempt);
-        continue;
-      }
-      throw error;
-    }
-  }
-
-  throw new Error(`Yahoo Finance request failed for ${symbol}`);
+  const payload = await fetchJson(fetcher, url.toString());
+  const parsed = parseYahooChartResponse(symbol, payload, fetchedAt);
+  return {
+    ...parsed,
+    points: parsed.points.filter((point) => matchesRequest(point, request)),
+  };
 }
 
 export function createYahooMarketData(fetcher: FetchLike = fetch): MarketDataProvider {
-  return {
-    async getDailyHistory(request) {
-      const startDate = request.startDate ?? getDefaultStartDate();
-      const endDate = request.endDate ?? getDefaultEndDate();
-      const fetchedAt = new Date().toISOString();
-      const series: MarketSeries[] = [];
+  let rateLimitedUntil = 0;
+  let queue: Promise<void> = Promise.resolve();
+  const inFlight = new Map<string, Promise<DailyHistoryResponse>>();
 
-      for (const symbol of request.symbols) {
-        try {
-          const nextSeries = await fetchSymbolHistory(fetcher, symbol, startDate, endDate, request, fetchedAt);
-          series.push(nextSeries);
-        } catch (error) {
-          console.warn(`Skipping ${symbol} due to Yahoo Finance data failure:`, error);
+  async function loadHistory(request: DailyHistoryRequest): Promise<DailyHistoryResponse> {
+    if (Date.now() < rateLimitedUntil) {
+      throw new YahooRateLimitError(rateLimitedUntil);
+    }
+
+    const startDate = request.startDate!;
+    const endDate = request.endDate!;
+    const fetchedAt = new Date().toISOString();
+    const series: MarketSeries[] = [];
+
+    for (const symbol of request.symbols) {
+      try {
+        const nextSeries = await fetchSymbolHistory(fetcher, symbol, startDate, endDate, request, fetchedAt);
+        series.push(nextSeries);
+      } catch (error) {
+        // A 429 applies to the provider, so do not keep requesting other symbols.
+        if (error instanceof YahooRateLimitError) {
+          rateLimitedUntil = error.retryAt;
+          throw error;
         }
+        console.warn(`Skipping ${symbol} due to Yahoo Finance data failure:`, error);
+      }
+    }
+
+    if (series.length === 0) {
+      throw new Error("Yahoo Finance failed to return any valid series for the requested symbols.");
+    }
+
+    return { series, provider: "Yahoo Finance", fetchedAt };
+  }
+
+  return {
+    getDailyHistory(request) {
+      const normalizedRequest = {
+        ...request,
+        symbols: [...new Set(request.symbols)],
+        startDate: request.startDate ?? getDefaultStartDate(),
+        endDate: request.endDate ?? getDefaultEndDate(),
+      };
+      const key = JSON.stringify(normalizedRequest);
+      const existing = inFlight.get(key);
+      if (existing) {
+        return existing;
       }
 
-      if (series.length === 0) {
-        throw new Error("Yahoo Finance failed to return any valid series for the requested symbols.");
-      }
-
-      return { series, provider: "Yahoo Finance", fetchedAt };
+      // Share duplicate loads (including StrictMode) and serialize other batches.
+      const pending = queue.then(() => loadHistory(normalizedRequest)).finally(() => {
+        inFlight.delete(key);
+      });
+      inFlight.set(key, pending);
+      queue = pending.then(() => undefined, () => undefined);
+      return pending;
     },
   };
 }
