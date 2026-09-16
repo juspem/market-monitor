@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { calculateRatio } from "../../calculations/relativeRatio";
 import { normalizePerformance, type NormalizedPoint } from "../../calculations/normalizePerformance";
-import { yahooMarketData } from "../../data/yahooMarketData";
+import { liveMarketData } from "../../data/liveMarketData";
+import { calculateYieldSpread } from "../../calculations/yieldSpread";
+import { MARKET_INDICATORS } from "../../domain/marketIndicators";
+import { IndicatorPanel } from "./IndicatorPanel";
 import { ALL_INSTRUMENTS, INSTRUMENTS, type InstrumentSymbol } from "../../domain/instruments";
 import { MARKET_RATIOS } from "../../domain/marketRatios";
 import type { MarketSeries } from "../../domain/marketTypes";
@@ -28,6 +31,12 @@ const INDEX_LABELS: Record<InstrumentSymbol, string> = {
   EEM: "Emerging Markets (EEM)",
   VNQ: "Real Estate (VNQ)",
   "^VIX": "CBOE Volatility (^VIX)",
+  "^VIX3M": "3-month Volatility (^VIX3M)",
+  "EURUSD=X": "EUR/USD",
+  "JPY=X": "USD/JPY",
+  "GBPUSD=X": "GBP/USD",
+  DGS2: "US 2-year Treasury yield",
+  DGS10: "US 10-year Treasury yield",
   "^W5000": "Wilshire 5000 (^W5000)",
   PSP: "Listed Private Equity (PSP)",
   XLE: "Energy Select Sector (XLE)",
@@ -47,7 +56,7 @@ const RATIO_SECTIONS: readonly { label: string; categories: readonly string[] }[
   { label: "Breadth & leadership", categories: ["Breadth", "Participation", "Growth"] },
   { label: "Risk & rates", categories: ["Credit", "Volatility", "Rates"] },
   { label: "Commodities", categories: ["Commodities", "Gold", "Oil", "Metals", "Energy"] },
-  { label: "Global & currency", categories: ["Global", "Dollar"] },
+  { label: "Global & currency", categories: ["Global", "Dollar", "Currency"] },
   { label: "Real assets", categories: ["Real estate", "Private equity"] },
 ] as const;
 
@@ -73,6 +82,14 @@ export function Dashboard() {
   const [loadedStartDate, setLoadedStartDate] = useState<string>();
   const [loadError, setLoadError] = useState<unknown>();
   const [retryCount, setRetryCount] = useState(0);
+  const [warnings, setWarnings] = useState<string[]>([]);
+  const [provider, setProvider] = useState("");
+
+  function retryData() {
+    setLoadedStartDate(undefined);
+    setFullHistoryLoaded(false);
+    setRetryCount((count) => count + 1);
+  }
 
   useEffect(() => {
     const dataRange = selectedRange === "3M" ? "1Y" : selectedRange;
@@ -86,13 +103,15 @@ export function Dashboard() {
     setLoading(true);
     setLoadError(undefined);
 
-    void yahooMarketData
+    void liveMarketData
       .getDailyHistory({ symbols: ALL_INSTRUMENTS, startDate: requestedStartDate, missingData: "report" })
       .then((response) => {
         if (!active) {
           return;
         }
         setSeries(response.series);
+        setWarnings(response.warnings ?? []);
+        setProvider(response.provider);
         setLoadedStartDate(requestedStartDate);
         if (fullHistoryRequested) {
           setFullHistoryLoaded(true);
@@ -117,7 +136,8 @@ export function Dashboard() {
   const state = getDashboardState(series, loadError, loading && series.length === 0);
 
   const normalized: Partial<Record<InstrumentSymbol, NormalizedPoint[]>> = Object.fromEntries(
-    series.map((item) => [item.symbol, normalizePerformance(item.points)]),
+    series.filter((item) => INSTRUMENTS.some((symbol) => symbol === item.symbol))
+      .map((item) => [item.symbol, normalizePerformance(item.points)]),
   );
   const rangeWindow = TIME_RANGES.find((range) => range.label === selectedRange);
   const selectedRangeNormalized: Partial<Record<InstrumentSymbol, NormalizedPoint[]>> = Object.fromEntries(
@@ -132,6 +152,7 @@ export function Dashboard() {
     }),
   );
   const lastUpdated = series[0]?.points.at(-1)?.timestamp;
+  const selectWindow = <T,>(points: T[]): T[] => rangeWindow?.points ? points.slice(-rangeWindow.points) : points;
 
   return (
     <main className="dashboard-shell">
@@ -143,7 +164,8 @@ export function Dashboard() {
         </div>
         <div className="data-badge">
           <span className={loading ? "status-dot status-dot--loading" : "status-dot"} />
-          <span>{loading ? "Loading data..." : state === "error" ? "Data error" : state === "stale" ? "Delayed data" : "Yahoo Finance"}</span>
+          <span>{loading ? "Loading data..." : state === "error" ? "Data error" : warnings.length ? "Partial data" : state === "stale" ? "Delayed data" : provider}</span>
+          {provider && <small>{provider}</small>}
           <small>{state === "loading" ? "Loading" : lastUpdated ? `As of ${lastUpdated.slice(0, 10)}` : state}</small>
         </div>
       </header>
@@ -152,10 +174,16 @@ export function Dashboard() {
       {state === "error" && (
         <div className="dashboard-message dashboard-message--error" role="alert">
           <p>{loadError instanceof Error ? loadError.message : "Market data is unavailable."}</p>
-          <button type="button" onClick={() => setRetryCount((count) => count + 1)}>Retry</button>
+          <button type="button" onClick={retryData}>Retry</button>
         </div>
       )}
       {state === "empty" && <p className="dashboard-message">No valid market observations are available.</p>}
+      {warnings.length > 0 && state !== "error" && (
+        <div className="dashboard-message" role="status">
+          <p>{warnings.join(" ")}</p>
+          <button type="button" disabled={loading} onClick={retryData}>Retry unavailable data</button>
+        </div>
+      )}
 
       {(state === "ready" || state === "stale") && <>
         <section className="summary-grid" aria-label="Instrument summaries">
@@ -226,6 +254,14 @@ export function Dashboard() {
                   <h2>{section.label}</h2>
                 </div>
                 <div className="ratio-grid">
+                  {MARKET_INDICATORS.filter((definition) => section.categories.includes(definition.category)).map((definition) => {
+                    const underlying = series.find((item) => item.symbol === definition.symbol);
+                    const points = definition.id === "us-10y-2y"
+                      ? calculateYieldSpread(series.find((item) => item.symbol === "DGS10")?.points ?? [], series.find((item) => item.symbol === "DGS2")?.points ?? [])
+                      : underlying?.points ?? [];
+                    return <IndicatorPanel key={definition.id} definition={definition} points={selectWindow(points)}
+                      source={definition.id === "us-10y-2y" ? "Calculated from FRED Treasury yields" : underlying?.source} range={selectedRange} />;
+                  })}
                   {definitions.map((definition) => {
                     const numerator = series.find((item) => item.symbol === definition.numerator);
                     const denominator = series.find((item) => item.symbol === definition.denominator);
@@ -245,7 +281,7 @@ export function Dashboard() {
                             <span key={interpretation}>{interpretation}</span>
                           ))}
                         </p>
-                        <RatioChart label={definition.label} points={ratio} />
+                        <RatioChart label={definition.label} points={selectWindow(ratio)} referenceValue={definition.id === "vix-vix3m" ? 1 : undefined} />
                       </section>
                     );
                   })}

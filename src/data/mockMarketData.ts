@@ -39,6 +39,12 @@ const BASE_PRICES: Record<InstrumentSymbol, number> = {
   EEM: 42,
   VNQ: 92,
   "^VIX": 18,
+  "^VIX3M": 21,
+  "EURUSD=X": 1.08,
+  "JPY=X": 150.25,
+  "GBPUSD=X": 1.27,
+  DGS2: 4.2,
+  DGS10: 4.4,
   "^W5000": 77000,
   PSP: 62,
   XLE: 64,
@@ -99,7 +105,7 @@ function createSeries(symbol: InstrumentSymbol): MarketSeries {
     return {
       timestamp: createExchangeTimestamp(date),
       tradingDate: date,
-      close: Number(close.toFixed(2)),
+      close: Number(close.toFixed(symbol.endsWith("=X") ? 4 : 2)),
     };
   });
 

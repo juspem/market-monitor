@@ -174,4 +174,19 @@ describe("Yahoo market data", () => {
     expect(response.provider).toBe("Yahoo Finance");
     expect(response.series).toHaveLength(2);
   });
+
+  it("preserves native FX precision and routes the three currency pairs and VIX3M", async () => {
+    const payload = { chart: { result: [{ meta: { exchangeTimezoneName: "Europe/London" },
+      timestamp: [1773063000], indicators: { quote: [{ close: [1.08123] }] } }] } };
+    const urls: string[] = [];
+    const provider = createYahooMarketData(async (input) => {
+      urls.push(String(input));
+      return new Response(JSON.stringify(payload));
+    });
+    const symbols = ["EURUSD=X", "JPY=X", "GBPUSD=X", "^VIX3M"] as const;
+    const result = await provider.getDailyHistory({ symbols, startDate: "2026-03-01", endDate: "2026-03-10" });
+    expect(urls.map((url) => decodeURIComponent(new URL(url).pathname.split("/").at(-1)!))).toEqual(symbols);
+    expect(result.series[0].points[0].close).toBe(1.08123);
+    expect(result.series[0].points[0].tradingDate).toBe("2026-03-09");
+  });
 });

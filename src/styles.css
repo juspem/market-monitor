@@ -72,6 +72,12 @@ h2 { margin: 0; font-size: 1.15rem; letter-spacing: -0.02em; }
 .ratio-grid .panel { display: flex; flex-direction: column; width: 100%; min-width: 0; height: 100%; margin-bottom: 0; }
 .ratio-grid .panel-heading { min-height: 82px; }
 .ratio-meaning { margin: 6px 0 0; color: #65747d; font-size: 0.78rem; line-height: 1.35; }
+.indicator-reading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; margin-top: 4px; }
+.indicator-reading strong { font-size: 1.65rem; }
+.indicator-reading span { color: #53636b; font-size: 0.85rem; }
+.indicator-reading small { color: #65747d; }
+.indicator-source { color: #65747d; font-size: 0.7rem; margin: 8px 0 16px; }
+.chart-empty { min-height: 180px; display: grid; place-content: center; color: #65747d; font-size: 0.85rem; text-align: center; }
 .ratio-direction { display: grid; gap: 2px; width: 100%; margin: 7px 0 15px; color: #84919a; font-size: 0.64rem; line-height: 1.35; }
 .ratio-direction span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .legend { display: flex; gap: 18px; flex-wrap: wrap; padding-top: 7px; color: #65747d; font-size: 0.72rem; font-weight: 600; }

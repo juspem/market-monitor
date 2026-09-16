@@ -25,19 +25,22 @@ async function listen(server: Server): Promise<string> {
   return `http://127.0.0.1:${address.port}`;
 }
 
-it("normalizes Yahoo request headers and preserves the chart URL and query", async () => {
+it.each([
+  { prefix: "/api/yahoo", path: "/api/yahoo/chart/%5EGSPC?interval=1d&period1=0", expected: "/v8/finance/chart/%5EGSPC?interval=1d&period1=0", accept: "application/json" },
+  { prefix: "/api/fred", path: "/api/fred/graph/fredgraph.csv?id=DGS2&cosd=2026-01-01", expected: "/graph/fredgraph.csv?id=DGS2&cosd=2026-01-01", accept: "text/csv" },
+])("normalizes $prefix headers and preserves the upstream URL and query", async ({ prefix, path, expected, accept }) => {
   const upstream = createHttpServer((request, response) => {
     response.setHeader("Content-Type", "application/json");
     response.end(JSON.stringify({ url: request.url, headers: request.headers }));
   });
   const upstreamUrl = await listen(upstream);
-  const proxy = config.server!.proxy!["/api/yahoo"] as ProxyOptions;
+  const proxy = config.server!.proxy![prefix] as ProxyOptions;
   const vite = await createServer({
     configFile: false,
     server: {
       middlewareMode: true,
       watch: null,
-      proxy: { "/api/yahoo": { ...proxy, target: upstreamUrl } },
+      proxy: { [prefix]: { ...proxy, target: upstreamUrl } },
     },
     optimizeDeps: { noDiscovery: true, include: [] },
   });
@@ -45,7 +48,7 @@ it("normalizes Yahoo request headers and preserves the chart URL and query", asy
   const app = createHttpServer(vite.middlewares);
   const appUrl = await listen(app);
 
-  const response = await fetch(`${appUrl}/api/yahoo/chart/%5EGSPC?interval=1d&period1=0`, {
+  const response = await fetch(`${appUrl}${path}`, {
     headers: {
       "User-Agent": "",
       Cookie: "local-session=test",
@@ -57,9 +60,9 @@ it("normalizes Yahoo request headers and preserves the chart URL and query", asy
   const received = await response.json();
 
   expect(response.status).toBe(200);
-  expect(received.url).toBe("/v8/finance/chart/%5EGSPC?interval=1d&period1=0");
+  expect(received.url).toBe(expected);
   expect(received.headers["user-agent"]).toBe("market-monitor/0.1.0");
-  expect(received.headers.accept).toBe("application/json");
+  expect(received.headers.accept).toBe(accept);
   expect(received.headers.host).toBe(new URL(upstreamUrl).host);
   for (const header of ["cookie", "authorization", "origin", "referer"]) {
     expect(received.headers[header]).toBeUndefined();

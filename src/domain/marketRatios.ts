@@ -57,13 +57,13 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     marketInterpretation: "Rising suggests stronger risk appetite, easier credit, and improving confidence in corporate borrowers; Falling suggests caution or a flight toward Treasury safety.",
   },
   {
-    id: "vix-gspc",
+    id: "vix-vix3m",
     numerator: "^VIX",
-    denominator: "^GSPC",
-    label: "CBOE Volatility (^VIX) / S&P 500 (^GSPC)",
+    denominator: "^VIX3M",
+    label: "VIX / VIX3M",
     category: "Volatility",
-    meaning: "Market stress relative to broad equity strength",
-    marketInterpretation: "Rising signals increasing market stress, hedging demand, and uncertainty around equities; Falling suggests calmer conditions and improving risk tolerance.",
+    meaning: "30-day versus 3-month expected S&P 500 volatility",
+    marketInterpretation: "Above 1 means near-term expected volatility exceeds the 3-month horizon; Below 1 means near-term expected volatility is lower than the 3-month horizon.",
   },
   {
     id: "tlt-gspc",

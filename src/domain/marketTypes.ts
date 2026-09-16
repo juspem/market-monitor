@@ -31,4 +31,5 @@ export type DailyHistoryResponse = {
   series: MarketSeries[];
   provider: string;
   fetchedAt: string;
+  warnings?: string[];
 };
