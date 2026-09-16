@@ -14,7 +14,7 @@ export function RatioChart({ label, points, precision = 4, suffix = "", referenc
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current || points.length === 0) {
+    if (!containerRef.current || points.length < 2) {
       return;
     }
 
@@ -37,6 +37,7 @@ export function RatioChart({ label, points, precision = 4, suffix = "", referenc
 
     const line = chart.addSeries(LineSeries, {
       color: "#be123c", lineWidth: 2,
+      priceLineVisible: false,
       priceFormat: { type: "custom", minMove: 10 ** -precision, formatter: (value: number) => `${value.toFixed(precision)}${suffix}` },
     });
     line.setData(points.map((point) => ({ time: point.tradingDate, value: point.ratio })));
@@ -51,6 +52,12 @@ export function RatioChart({ label, points, precision = 4, suffix = "", referenc
   }, [label, points, precision, suffix, referenceValue]);
 
   if (!points.length) return <p className="chart-empty" role="status">No data available for {label} in this range.</p>;
+  if (points.length === 1) return (
+    <p className="chart-empty" role="status">
+      {points[0].ratio.toFixed(precision)}{suffix} on {points[0].tradingDate}.
+      {" "}Only one observation is available; a trend cannot be shown.
+    </p>
+  );
 
   return (
     <div className="chart-frame chart-frame--ratio chart-frame--interactive" ref={containerRef} aria-label={`${label} chart`}>

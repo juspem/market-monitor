@@ -28,6 +28,7 @@ async function listen(server: Server): Promise<string> {
 it.each([
   { prefix: "/api/yahoo", path: "/api/yahoo/chart/%5EGSPC?interval=1d&period1=0", expected: "/v8/finance/chart/%5EGSPC?interval=1d&period1=0", accept: "application/json" },
   { prefix: "/api/fred", path: "/api/fred/graph/fredgraph.csv?id=DGS2&cosd=2026-01-01", expected: "/graph/fredgraph.csv?id=DGS2&cosd=2026-01-01", accept: "text/csv" },
+  { prefix: "/api/cboe", path: "/api/cboe/daily_prices/VIX3M_History.csv", expected: "/api/global/us_indices/daily_prices/VIX3M_History.csv", accept: "text/csv" },
 ])("normalizes $prefix headers and preserves the upstream URL and query", async ({ prefix, path, expected, accept }) => {
   const upstream = createHttpServer((request, response) => {
     response.setHeader("Content-Type", "application/json");

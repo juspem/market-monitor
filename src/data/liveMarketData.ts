@@ -3,13 +3,15 @@ import type { MarketSeries } from "../domain/marketTypes";
 import type { MarketDataProvider } from "./marketDataSource";
 import { fredMarketData } from "./fredMarketData";
 import { yahooMarketData } from "./yahooMarketData";
+import { cboeMarketData, isCboeSymbol } from "./cboeMarketData";
 
-export function createLiveMarketData(yahoo: MarketDataProvider, fred: MarketDataProvider): MarketDataProvider {
+export function createLiveMarketData(yahoo: MarketDataProvider, fred: MarketDataProvider, cboe: MarketDataProvider): MarketDataProvider {
   return {
     async getDailyHistory(request) {
       const groups = [
-        { provider: yahoo, symbols: request.symbols.filter((symbol) => !isYieldSymbol(symbol)) },
+        { provider: yahoo, symbols: request.symbols.filter((symbol) => !isYieldSymbol(symbol) && !isCboeSymbol(symbol)) },
         { provider: fred, symbols: request.symbols.filter(isYieldSymbol) },
+        { provider: cboe, symbols: request.symbols.filter(isCboeSymbol) },
       ].filter((group) => group.symbols.length);
       const results = await Promise.allSettled(groups.map(({ provider, symbols }) =>
         provider.getDailyHistory({ ...request, symbols })));
@@ -33,4 +35,4 @@ export function createLiveMarketData(yahoo: MarketDataProvider, fred: MarketData
   };
 }
 
-export const liveMarketData = createLiveMarketData(yahooMarketData, fredMarketData);
+export const liveMarketData = createLiveMarketData(yahooMarketData, fredMarketData, cboeMarketData);

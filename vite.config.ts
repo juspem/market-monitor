@@ -8,6 +8,19 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     proxy: {
+      "/api/cboe": {
+        target: "https://cdn.cboe.com",
+        changeOrigin: true,
+        headers: { "User-Agent": "market-monitor/0.1.0", Accept: "text/csv" },
+        configure: (proxy) => {
+          proxy.on("proxyReq", (request) => {
+            for (const header of ["cookie", "authorization", "origin", "referer"]) {
+              request.removeHeader(header);
+            }
+          });
+        },
+        rewrite: (path) => path.replace(/^\/api\/cboe/, "/api/global/us_indices"),
+      },
       "/api/fred": {
         target: "https://fred.stlouisfed.org",
         changeOrigin: true,

@@ -266,6 +266,7 @@ export function Dashboard() {
                     const numerator = series.find((item) => item.symbol === definition.numerator);
                     const denominator = series.find((item) => item.symbol === definition.denominator);
                     const ratio = numerator && denominator ? calculateRatio(numerator, denominator) : [];
+                    const visibleRatio = selectWindow(ratio);
 
                     return (
                       <section className="panel panel--ratio" key={definition.id}>
@@ -281,7 +282,11 @@ export function Dashboard() {
                             <span key={interpretation}>{interpretation}</span>
                           ))}
                         </p>
-                        <RatioChart label={definition.label} points={selectWindow(ratio)} referenceValue={definition.id === "vix-vix3m" ? 1 : undefined} />
+                        {visibleRatio.length > 0 && <p className="indicator-source">
+                          {numerator?.source === denominator?.source ? numerator?.source : `${numerator?.source} / ${denominator?.source}`}
+                          {` · ${visibleRatio.length} matched daily observations · ${visibleRatio[0].tradingDate} to ${visibleRatio.at(-1)!.tradingDate}`}
+                        </p>}
+                        <RatioChart label={definition.label} points={visibleRatio} referenceValue={definition.id === "vix-vix3m" ? 1 : undefined} />
                       </section>
                     );
                   })}
