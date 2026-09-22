@@ -1,26 +1,43 @@
 {
   "name": "market-analysis",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "description": "A desktop dashboard for market leadership, rates, currencies, and risk indicators.",
+  "author": "Juuso Manninen",
+  "license": "MIT",
+  "main": "electron/main.mjs",
   "type": "module",
   "scripts": {
     "start": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/build-web-notices.mjs",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:desktop-resources": "node scripts/build-desktop-resources.mjs",
+    "desktop:runtime": "install-electron",
+    "desktop:build": "npm run desktop:runtime && npm run build:desktop-resources && npm run build",
+    "desktop": "npm run desktop:build && node scripts/start-desktop.mjs",
+    "desktop:pack": "npm run desktop:build && electron-builder --win --x64 --dir --publish never",
+    "desktop:dist": "npm run desktop:build && electron-builder --win --x64 --publish never",
+    "test:desktop": "node scripts/smoke-desktop.mjs"
   },
   "dependencies": {
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
     "lightweight-charts": "^5.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^44.4.1",
+    "electron-builder": "^26.15.3",
+    "playwright-core": "^1.63.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.11"
   }
 }

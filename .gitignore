@@ -1,5 +1,10 @@
 node_modules/
 dist/
+release/
+build/icon.png
+build/icon.ico
+build/THIRD-PARTY-NOTICES.txt
+.desktop-test/
 .vite/
 coverage/
 *.tsbuildinfo
@@ -14,3 +19,13 @@ coverage/
 *.suo
 Thumbs.db
 .DS_Store
+
+*.pfx
+*.p12
+*.pem
+*.key
+.npmrc
+.yarnrc.yml
+
+data-cache/
+private/

@@ -1,0 +1,46 @@
+appId: com.marketmonitor.desktop
+productName: Market Monitor
+copyright: Copyright (c) 2026 Juuso Manninen
+asar: true
+npmRebuild: false
+electronDist: node_modules/electron/dist
+electronLanguages: [en-US]
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**/*
+  - electron/main.mjs
+  - electron/protocol.mjs
+  - electron/external-links.mjs
+  - build/icon.png
+  - package.json
+  - '!node_modules/**/*'
+extraFiles:
+  - from: LICENSE
+    to: LICENSE.txt
+  - from: PRIVACY.md
+    to: PRIVACY.md
+  - from: docs/DATA_SOURCES.md
+    to: DATA-SOURCES.md
+  - from: build/THIRD-PARTY-NOTICES.txt
+    to: THIRD-PARTY-NOTICES.txt
+  - from: docs/windows-app.txt
+    to: README.txt
+win:
+  signExecutable: false
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: build/icon.ico
+  artifactName: Market-Monitor-Setup-${version}-${arch}.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Market Monitor
+  runAfterFinish: false
+  deleteAppDataOnUninstall: false

@@ -296,6 +296,10 @@ export function Dashboard() {
           })}
         </div>
       </>}
+      <footer className="dashboard-footer">
+        <p>Copyright &copy; 2026 Juuso Manninen. Software licensed under MIT. Market data is subject to its providers' terms.</p>
+        <p>TradingView Lightweight Charts&trade; &middot; Copyright (c) 2025 TradingView, Inc. <a href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer">TradingView</a></p>
+      </footer>
     </main>
   );
 }

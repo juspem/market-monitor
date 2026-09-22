@@ -1,0 +1,33 @@
+MARKET MONITOR - WINDOWS EDITION
+
+Requires Windows 10 or later (64-bit) and an internet connection for market data.
+
+INSTALL
+Open Market-Monitor-Setup-<version>-x64.exe and follow the installer.
+Launch Market Monitor from the Start menu or desktop shortcut.
+Node.js, a browser, and a terminal are not required.
+
+USE
+Choose a date range above the performance chart.
+Use the Market Regime selector for rates, currencies, commodities, and other indicators.
+Data comes directly from Yahoo Finance, FRED, and Cboe; it can be delayed or unavailable.
+If Yahoo limits requests, wait for the displayed cooldown before pressing Retry.
+Use View > Reload (Ctrl+R) to refresh the dashboard.
+
+UPDATES
+Install a newer Market Monitor installer over the existing version.
+This version does not download or install updates automatically.
+
+SHARING
+Software copyright (c) 2026 Juuso Manninen, licensed under MIT (see LICENSE.txt).
+The software license does not grant rights to provider data. See DATA-SOURCES.md
+for unresolved access/display permissions before distributing a live-data release.
+Once those are resolved, recipients need only the Setup executable, not the project folder.
+This initial release is unsigned, so Windows may show an unfamiliar-publisher warning.
+
+UNINSTALL
+Use Windows Settings > Apps > Market Monitor > Uninstall.
+
+THIRD-PARTY SOFTWARE
+See THIRD-PARTY-NOTICES.txt and the Electron/Chromium license files in this folder.
+Network and local-storage behavior is described in PRIVACY.md.

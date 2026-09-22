@@ -1,4 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+@import "@fontsource/dm-sans/latin-400.css";
+@import "@fontsource/dm-sans/latin-500.css";
+@import "@fontsource/dm-sans/latin-600.css";
+@import "@fontsource/dm-sans/latin-700.css";
+@import "@fontsource/space-grotesk/latin-500.css";
+@import "@fontsource/space-grotesk/latin-600.css";
+@import "@fontsource/space-grotesk/latin-700.css";
 
 :root {
   font-family: "DM Sans", sans-serif;
@@ -77,6 +83,8 @@ h2 { margin: 0; font-size: 1.15rem; letter-spacing: -0.02em; }
 .indicator-reading span { color: #53636b; font-size: 0.85rem; }
 .indicator-reading small { color: #65747d; }
 .indicator-source { color: #65747d; font-size: 0.7rem; margin: 8px 0 16px; }
+.dashboard-footer { max-width: 1380px; margin: 30px auto 0; color: #65747d; font-size: 0.72rem; line-height: 1.5; }
+.dashboard-footer a { color: #1d6fa5; }
 .chart-empty { min-height: 180px; display: grid; place-content: center; color: #65747d; font-size: 0.85rem; text-align: center; }
 .ratio-direction { display: grid; gap: 2px; width: 100%; margin: 7px 0 15px; color: #84919a; font-size: 0.64rem; line-height: 1.35; }
 .ratio-direction span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
