@@ -5,6 +5,9 @@ import config from "./vite.config";
 
 const cleanup: Array<() => Promise<unknown>> = [];
 
+it("uses the Cboe API host directly to avoid the legacy host redirect", () => {
+  expect((config.server!.proxy!["/api/cboe"] as ProxyOptions).target).toBe("https://cdn-api.cboe.com");
+});
 afterEach(async () => {
   for (const close of cleanup.reverse()) {
     await close();

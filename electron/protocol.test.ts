@@ -16,7 +16,8 @@ describe("desktop data routes", () => {
   it.each([
     ["/api/yahoo/chart/%5EGSPC?period1=0&period2=1800000000&interval=1m&url=https://evil.test", "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=0&period2=1800000000&interval=1d&events=div%2Csplits&includeAdjustedClose=true"],
     ["/api/fred/graph/fredgraph.csv?id=DGS2&cosd=2026-01-01&coed=2026-09-16", "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2&cosd=2026-01-01&coed=2026-09-16"],
-    ["/api/cboe/daily_prices/VIX3M_History.csv", "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv"],
+    ["/api/cboe/daily_prices/VIX_History.csv", "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv"],
+    ["/api/cboe/daily_prices/VIX3M_History.csv", "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv"],
   ])("maps only supported upstream parameters for %s", (route, expected) => {
     expect(resolveMarketRequest(new URL(`app://market-monitor${route}`))?.url).toBe(expected);
   });
@@ -46,6 +47,25 @@ describe("desktop data routes", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
+  it.each(["VIX", "VIX3M"])("fetches %s from the Cboe API host without a redirect", async (symbol) => {
+    const csv = "DATE,CLOSE\n10/21/2026,20";
+    const fetcher = vi.fn(async (url, options) => {
+      // The legacy CDN host redirects, which redirect: error rejects.
+      if (new URL(url).hostname !== "cdn-api.cboe.com" && options.redirect === "error") {
+        throw new TypeError("Unexpected redirect");
+      }
+      return new Response(csv);
+    });
+    const response = await createAppHandler({ distDir, fetcher })(
+      new Request(`app://market-monitor/api/cboe/daily_prices/${symbol}_History.csv`),
+    );
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe(csv);
+    expect(fetcher).toHaveBeenCalledWith(
+      `https://cdn-api.cboe.com/api/global/us_indices/daily_prices/${symbol}_History.csv`,
+      expect.objectContaining({ credentials: "omit", redirect: "error" }),
+    );
+  });
   it("returns a useful failure when the network is unavailable", async () => {
     const handler = createAppHandler({ distDir, fetcher: async () => { throw new Error("offline"); } });
     const response = await handler(new Request("app://market-monitor/api/cboe/daily_prices/VIX_History.csv"));

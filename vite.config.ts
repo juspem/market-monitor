@@ -9,7 +9,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       "/api/cboe": {
-        target: "https://cdn.cboe.com",
+        target: "https://cdn-api.cboe.com",
         changeOrigin: true,
         headers: { "User-Agent": "market-monitor/0.1.0", Accept: "text/csv" },
         configure: (proxy) => {

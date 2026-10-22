@@ -40,7 +40,7 @@ export function resolveMarketRequest(url) {
   }
   const cboe = /^\/api\/cboe\/daily_prices\/(VIX|VIX3M)_History\.csv$/.exec(url.pathname);
   if (cboe) return {
-    url: `https://cdn.cboe.com/api/global/us_indices/daily_prices/${cboe[1]}_History.csv`,
+    url: `https://cdn-api.cboe.com/api/global/us_indices/daily_prices/${cboe[1]}_History.csv`,
     contentType: "text/csv; charset=utf-8",
   };
   return null;

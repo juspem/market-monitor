@@ -108,7 +108,7 @@ When deploying the built files, configure a server-side proxy for `/api/yahoo/ch
 
 Also proxy `/api/fred/graph/fredgraph.csv` to `https://fred.stlouisfed.org/graph/fredgraph.csv`, preserving query parameters and stripping local cookies and authorization headers. Development and preview use the proxy in `vite.config.ts`; restart the server after changing it. Set `VITE_FRED_DATA_URL` at build time to use your own CSV proxy. Source series: [2-year yield](https://fred.stlouisfed.org/series/DGS2), [10-year yield](https://fred.stlouisfed.org/series/DGS10). FRED observations can lag the latest market session.
 
-Proxy `/api/cboe/daily_prices/:filename` to `https://cdn.cboe.com/api/global/us_indices/daily_prices/:filename`, stripping local cookies and authorization headers. The app requests `VIX_History.csv` and `VIX3M_History.csv`. Development and preview include this proxy. Set `VITE_CBOE_DATA_URL` to an alternative proxy's daily-prices base URL if needed. These are daily closing histories, not intraday quotes.
+Proxy `/api/cboe/daily_prices/:filename` to `https://cdn-api.cboe.com/api/global/us_indices/daily_prices/:filename`, stripping local cookies and authorization headers. The app requests `VIX_History.csv` and `VIX3M_History.csv`. Development and preview include this proxy. Set `VITE_CBOE_DATA_URL` to an alternative proxy's daily-prices base URL if needed. These are daily closing histories, not intraday quotes.
 
 If Yahoo returns 429, loading stops until you select Retry after the displayed cooldown (at least 60 seconds, longer when Yahoo sends Retry-After). This does not guarantee Yahoo will accept the next request; the upstream restriction can last longer. Restart the development server after changing proxy settings.
 

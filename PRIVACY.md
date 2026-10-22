@@ -6,7 +6,7 @@ This document describes the application as implemented. It does not describe the
 
 ## Data leaving the device
 
-The Windows app requests selected market symbols, series identifiers, and date ranges directly from Yahoo Finance (`query1.finance.yahoo.com`), FRED (`fred.stlouisfed.org`), and Cboe (`cdn.cboe.com`). These services receive the connection's public IP address and ordinary request metadata. Desktop data requests omit credentials and do not forward local cookies or authorization headers. Provider responses may be subject to the providers' privacy policies.
+The Windows app requests selected market symbols, series identifiers, and date ranges directly from Yahoo Finance (`query1.finance.yahoo.com`), FRED (`fred.stlouisfed.org`), and Cboe (`cdn-api.cboe.com`). These services receive the connection's public IP address and ordinary request metadata. Desktop data requests omit credentials and do not forward local cookies or authorization headers. Provider responses may be subject to the providers' privacy policies.
 
 There are no application accounts, portfolio uploads, advertising integrations, analytics SDKs, or application-configured crash-report uploads. Fonts are bundled locally. Clicking the TradingView attribution link opens the external site in the default browser, where that browser's settings and the site's policies apply. The app does not automatically download application updates.
 
