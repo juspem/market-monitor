@@ -1,16 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { getChartColors, useTheme } from "../../theme";
+import { useEffect, useRef } from "react";
 import { ColorType, CrosshairMode, LineSeries, createChart } from "lightweight-charts";
 import type { NormalizedPoint } from "../../calculations/normalizePerformance";
 import type { InstrumentSymbol } from "../../domain/instruments";
-
-const COLORS: Partial<Record<InstrumentSymbol, string>> = {
-  "^GSPC": "#1d6fa5",
-  "^NDX": "#d97706",
-  "^RUT": "#087f5b",
-  "^DJI": "#c2410c",
-  "^SP500EW": "#7c3aed",
-  "^VIX": "#f43f5e",
-};
 
 const CHART_LABELS: Partial<Record<InstrumentSymbol, string>> = {
   "^GSPC": "S&P 500",
@@ -57,6 +49,7 @@ function applyTimeRange(chart: ReturnType<typeof createChart>, selectedRange: Ti
 }
 
 export function PerformanceChart({ series, selectedInstrument, selectedRange, onRangeChange }: Props) {
+  const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<ReturnType<typeof createChart> | null>(null);
   const lastTradingDateRef = useRef<string | null>(null);
@@ -66,21 +59,22 @@ export function PerformanceChart({ series, selectedInstrument, selectedRange, on
       return;
     }
 
+    const colors = getChartColors();
     const chart = createChart(containerRef.current, {
       autoSize: true,
       crosshair: { mode: CrosshairMode.Normal },
       handleScroll: true,
       handleScale: true,
       layout: {
-        background: { type: ColorType.Solid, color: "#f8fafc" },
-        textColor: "#475569",
+        background: { type: ColorType.Solid, color: colors.background },
+        textColor: colors.text,
       },
       grid: {
-        vertLines: { color: "#e2e8f0" },
-        horzLines: { color: "#e2e8f0" },
+        vertLines: { color: colors.grid },
+        horzLines: { color: colors.grid },
       },
-      rightPriceScale: { borderColor: "#cbd5e1" },
-      timeScale: { borderColor: "#cbd5e1" },
+      rightPriceScale: { borderColor: colors.border },
+      timeScale: { borderColor: colors.border },
     });
 
     let lastTradingDate: string | null = null;
@@ -95,7 +89,7 @@ export function PerformanceChart({ series, selectedInstrument, selectedRange, on
       }
 
       const line = chart.addSeries(LineSeries, {
-        color: COLORS[symbol as InstrumentSymbol] ?? "#64748b",
+        color: colors.lines[symbol.replace(/[^a-z0-9]/gi, "").toLowerCase()] ?? colors.reference,
         lineWidth: symbol === selectedInstrument ? 3 : 1,
         priceLineVisible: false,
         title: CHART_LABELS[symbol as InstrumentSymbol] ?? symbol,
@@ -113,7 +107,7 @@ export function PerformanceChart({ series, selectedInstrument, selectedRange, on
       chartRef.current = null;
       chart.remove();
     };
-  }, [selectedInstrument, series]);
+  }, [selectedInstrument, series, theme]);
 
   useEffect(() => {
     const chart = chartRef.current;

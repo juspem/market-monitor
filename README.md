@@ -64,6 +64,8 @@ Before pushing, inspect `git status --short`, `git diff --cached --stat`, and `g
 
 ## Usage
 
+Tumma tila on oletuksena sekä Windows-sovelluksessa että verkkoversiossa. Yläreunan kuu-/aurinkopainikkeella voit vaihtaa vaalean ja tumman teeman välillä. Kuu ottaa tumman tilan käyttöön ja aurinko palauttaa vaalean tilan. Tumma teema käyttää lähes mustia ja neutraaleja harmaita taustoja. Molempien teemojen taustat ovat yksivärisiä ilman liukuväriä. Valinta tallentuu paikallisesti ja palautuu seuraavalla käynnistyksellä, joten aiemmin valittu vaalea tila säilyy käytössä. Teema vaihtaa myös kuvaajien taustat, asteikot ja viivavärit luettavuuden säilyttämiseksi.
+
 ### Install
 
 ```powershell

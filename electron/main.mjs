@@ -30,7 +30,7 @@ if (!app.requestSingleInstanceLock()) {
     ]));
     mainWindow = new BrowserWindow({
       title: "Market Monitor", width: 1440, height: 960, minWidth: 480, minHeight: 600,
-      show: false, backgroundColor: "#eef2f3", icon: path.join(app.getAppPath(), "build", "icon.png"),
+      show: false, backgroundColor: "#0c0c0c", icon: path.join(app.getAppPath(), "build", "icon.png"),
       webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true, webSecurity: true },
     });
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
