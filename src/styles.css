@@ -17,10 +17,10 @@
   --control: #e5ecee;
   --hover: #ffffff;
   --selected-text: #ffffff;
-  --accent: #087f65;
-  --accent-soft: #cdebe2;
-  --positive: #077754;
-  --negative: #be123c;
+  --accent: #2457a6;
+  --accent-soft: #dce8f8;
+  --positive: #006747;
+  --negative: #a30f34;
   --error-border: #ce6b82;
   --chart-background: #f8fafc;
   --chart-text: #475569;
@@ -52,10 +52,10 @@
   --control: #111111;
   --hover: #292929;
   --selected-text: #0c0c0c;
-  --accent: #5ee0ba;
-  --accent-soft: #293832;
-  --positive: #6ee7b7;
-  --negative: #ff8fa6;
+  --accent: #8ab4f8;
+  --accent-soft: #26364d;
+  --positive: #43c995;
+  --negative: #f26b83;
   --error-border: #dc718a;
   --chart-background: #121212;
   --chart-text: #cccccc;
@@ -75,7 +75,7 @@
   background: var(--surface); color: var(--text); cursor: pointer; font-weight: 600;
 }
 .theme-toggle:hover, .dashboard-message button:hover { background: var(--hover); border-color: var(--accent); }
-.theme-toggle { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 50%; }
+.theme-toggle { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 4px; }
 .theme-toggle svg { width: 22px; height: 22px; }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .dashboard-message button:disabled { opacity: 0.65; cursor: wait; }

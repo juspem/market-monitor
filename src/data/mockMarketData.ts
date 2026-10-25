@@ -32,6 +32,8 @@ const BASE_PRICES: Record<InstrumentSymbol, number> = {
   IEF: 93,
   DBC: 25,
   GLD: 240,
+  "HG=F": 4.5,
+  "GC=F": 2700,
   USO: 75,
   SLV: 28,
   UNG: 14,

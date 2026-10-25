@@ -52,6 +52,16 @@ describe("calculateRatio", () => {
     expect(result[0]?.ratio).toBe(0.5);
   });
 
+  it("preserves precision for small ratios", () => {
+    const result = calculateRatio(
+      series("^SP500EW", [point("2026-01-02", 4.12345)]),
+      series("^GSPC", [point("2026-01-02", 2700)]),
+    );
+
+    expect(result[0]?.ratio).toBeCloseTo(4.12345 / 2700, 12);
+    expect(result[0]?.ratio).not.toBe(0.0015);
+  });
+
   it("omits dates missing from either ^RSP or ^GSPC", () => {
     const result = calculateRatio(
       series("^SP500EW", [

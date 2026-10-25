@@ -18,7 +18,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "S&P 500 EW / S&P 500 (^GSPC)",
     category: "Breadth",
     meaning: "Equal-weight breadth versus the S&P 500",
-    marketInterpretation: "Rising suggests broader participation beyond mega-cap leaders and healthier market breadth; Falling suggests leadership is narrowing into the largest companies.",
+    marketInterpretation: "Rising suggests broader participation beyond mega-cap leaders and healthier market breadth; Falling suggests leadership is narrowing into the largest companies",
   },
   {
     id: "rut-gspc",
@@ -27,7 +27,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Russell 2000 (^RUT) / S&P 500 (^GSPC)",
     category: "Participation",
     meaning: "Small caps versus the large-cap market",
-    marketInterpretation: "Rising suggests improving cyclical participation, economic confidence, and risk appetite; Falling suggests investors prefer large-cap defensiveness.",
+    marketInterpretation: "Rising suggests improving cyclical participation, economic confidence, and risk appetite; Falling suggests investors prefer large-cap defensiveness",
   },
   {
     id: "w5000-gspc",
@@ -36,7 +36,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Wilshire 5000 (^W5000) / S&P 500 (^GSPC)",
     category: "Breadth",
     meaning: "Broad US market participation versus the S&P 500",
-    marketInterpretation: "Rising suggests strength is spreading across large, mid, and small US companies; Falling suggests market leadership is becoming increasingly concentrated.",
+    marketInterpretation: "Rising suggests strength is spreading across large, mid, and small US companies; Falling suggests market leadership is becoming increasingly concentrated",
   },
   {
     id: "ndx-gspc",
@@ -45,7 +45,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Nasdaq 100 (^NDX) / S&P 500 (^GSPC)",
     category: "Growth",
     meaning: "Growth and technology leadership versus the broad market",
-    marketInterpretation: "Rising suggests growth and technology are leading investor returns; Falling suggests rotation toward value, cyclicals, or defensive sectors.",
+    marketInterpretation: "Rising suggests growth and technology are leading investor returns; Falling suggests rotation toward value, cyclicals, or defensive sectors",
   },
   {
     id: "hyg-ief",
@@ -54,7 +54,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "High Yield Bonds (HYG) / 7-10Y Treasuries (IEF)",
     category: "Credit",
     meaning: "Credit risk appetite versus intermediate Treasury safety",
-    marketInterpretation: "Rising suggests stronger risk appetite, easier credit, and improving confidence in corporate borrowers; Falling suggests caution or a flight toward Treasury safety.",
+    marketInterpretation: "Rising suggests stronger risk appetite, easier credit, and improving confidence in corporate borrowers; Falling suggests caution or a flight toward Treasury safety",
   },
   {
     id: "vix-vix3m",
@@ -63,7 +63,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "VIX / VIX3M",
     category: "Volatility",
     meaning: "30-day versus 3-month expected S&P 500 volatility",
-    marketInterpretation: "Above 1 means near-term expected volatility exceeds the 3-month horizon; Below 1 means near-term expected volatility is lower than the 3-month horizon.",
+    marketInterpretation: "Above 1 means near-term expected volatility exceeds the 3-month horizon; Below 1 means near-term expected volatility is lower than the 3-month horizon",
   },
   {
     id: "tlt-gspc",
@@ -72,7 +72,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "20+ Year Treasuries (TLT) / S&P 500 (^GSPC)",
     category: "Rates",
     meaning: "Long-duration Treasuries versus equities",
-    marketInterpretation: "Rising suggests investors favor defensive duration over equities, often as yields or growth expectations fall; Falling suggests equities lead bonds.",
+    marketInterpretation: "Rising suggests investors favor defensive duration over equities, often as yields or growth expectations fall; Falling suggests equities lead bonds",
   },
   {
     id: "dbc-gspc",
@@ -81,7 +81,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Commodities (DBC) / S&P 500 (^GSPC)",
     category: "Commodities",
     meaning: "Broad commodities versus equities",
-    marketInterpretation: "Rising suggests stronger global cyclical demand and possible inflation pressure; Falling suggests softer growth expectations, weaker demand, or disinflation.",
+    marketInterpretation: "Rising suggests stronger global cyclical demand and possible inflation pressure; Falling suggests softer growth expectations, weaker demand, or disinflation",
   },
   {
     id: "gld-gspc",
@@ -90,7 +90,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Gold (GLD) / S&P 500 (^GSPC)",
     category: "Gold",
     meaning: "Gold and defensive demand versus equities",
-    marketInterpretation: "Rising suggests defensive demand linked to inflation, currency concerns, or geopolitical risk; Falling suggests stronger preference for risk assets.",
+    marketInterpretation: "Rising suggests defensive demand linked to inflation, currency concerns, or geopolitical risk; Falling suggests stronger preference for risk assets",
   },
   {
     id: "uso-gspc",
@@ -99,7 +99,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Oil (USO) / S&P 500 (^GSPC)",
     category: "Oil",
     meaning: "Oil exposure versus equities",
-    marketInterpretation: "Rising suggests stronger energy demand, supply risk, or inflation pressure; Falling suggests weaker demand or easing energy costs.",
+    marketInterpretation: "Rising suggests stronger energy demand, supply risk, or inflation pressure; Falling suggests weaker demand or easing energy costs",
   },
   {
     id: "slv-gld",
@@ -108,7 +108,16 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Silver (SLV) / Gold (GLD)",
     category: "Metals",
     meaning: "Industrial silver demand versus monetary gold demand",
-    marketInterpretation: "Rising suggests a more cyclical, industrial tone and stronger manufacturing demand; Falling suggests a more defensive preference for monetary metals.",
+    marketInterpretation: "Rising suggests a more cyclical, industrial tone and stronger manufacturing demand; Falling suggests a more defensive preference for monetary metals",
+  },
+  {
+    id: "copper-gold",
+    numerator: "HG=F",
+    denominator: "GC=F",
+    label: "Copper Futures (HG=F) / Gold Futures (GC=F)",
+    category: "Metals",
+    meaning: "Copper futures versus gold futures",
+    marketInterpretation: "Rising suggests stronger cyclical demand relative to gold; Falling may indicate weaker growth expectations or defensive demand for gold and fear",
   },
   {
     id: "ung-gspc",
@@ -117,7 +126,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Natural Gas (UNG) / S&P 500 (^GSPC)",
     category: "Energy",
     meaning: "Natural gas exposure versus equities",
-    marketInterpretation: "Rising suggests stronger power demand, supply concerns, or a tighter energy market; Falling suggests weaker demand or easing energy pressure.",
+    marketInterpretation: "Rising suggests stronger power demand, supply concerns, or a tighter energy market; Falling suggests weaker demand or easing energy pressure",
   },
   {
     id: "uup-gspc",
@@ -126,7 +135,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "US Dollar (UUP) / S&P 500 (^GSPC)",
     category: "Dollar",
     meaning: "US dollar strength versus equities",
-    marketInterpretation: "Rising suggests defensive demand, tighter global financial conditions, or pressure on emerging markets; Falling often supports global risk appetite.",
+    marketInterpretation: "Rising suggests defensive demand, tighter global financial conditions, or pressure on emerging markets; Falling often supports global risk appetite",
   },
   {
     id: "eem-gspc",
@@ -135,7 +144,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Emerging Markets (EEM) / S&P 500 (^GSPC)",
     category: "Global",
     meaning: "Emerging markets participation versus US equities",
-    marketInterpretation: "Rising suggests improving global breadth, international participation, and risk appetite; Falling suggests continued US leadership or global caution.",
+    marketInterpretation: "Rising suggests improving global breadth, international participation, and risk appetite; Falling suggests continued US leadership or global caution",
   },
   {
     id: "vnq-gspc",
@@ -144,7 +153,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Real Estate (VNQ) / S&P 500 (^GSPC)",
     category: "Real estate",
     meaning: "Listed real estate versus equities",
-    marketInterpretation: "Rising suggests improving rate sensitivity, property sentiment, and appetite for real assets; Falling suggests pressure from yields or weaker property conditions.",
+    marketInterpretation: "Rising suggests improving rate sensitivity, property sentiment, and appetite for real assets; Falling suggests pressure from yields or weaker property conditions",
   },
   {
     id: "psp-gspc",
@@ -153,7 +162,7 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Listed Private Equity (PSP) / S&P 500 (^GSPC)",
     category: "Private equity",
     meaning: "Listed private equity exposure versus US equities",
-    marketInterpretation: "Rising suggests stronger appetite for illiquid, cyclical, and leveraged assets; Falling suggests tighter financial conditions or caution toward private markets.",
+    marketInterpretation: "Rising suggests stronger appetite for illiquid, cyclical, and leveraged assets; Falling suggests tighter financial conditions or caution toward private markets",
   },
   {
     id: "xle-gspc",
@@ -162,6 +171,6 @@ export const MARKET_RATIOS: readonly MarketRatioDefinition[] = [
     label: "Energy Select Sector (XLE) / S&P 500 (^GSPC)",
     category: "Energy",
     meaning: "US energy companies versus the broad equity market",
-    marketInterpretation: "Rising suggests energy-sector leadership, stronger commodity support, or inflation pressure; Falling suggests weaker energy leadership or easing inflation pressure.",
+    marketInterpretation: "Rising suggests energy-sector leadership, stronger commodity support, or inflation pressure; Falling suggests weaker energy leadership or easing inflation pressure",
   },
 ];

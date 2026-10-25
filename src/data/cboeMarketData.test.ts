@@ -16,9 +16,11 @@ describe("Cboe volatility history", () => {
     const request = { symbols: ["^VIX", "^VIX3M"] as const };
     const vix = parseCboeCsv("^VIX", "DATE,CLOSE\n09/11/2026,15.84\n09/14/2026,17.10\n09/15/2026,17.20\n09/16/2026,16.99", fetchedAt, request);
     const vix3m = parseCboeCsv("^VIX3M", csv, fetchedAt, request);
-    expect(calculateRatio(vix, vix3m).map((point) => [point.tradingDate, point.ratio])).toEqual([
-      ["2026-09-11", 0.8516], ["2026-09-14", 0.8869], ["2026-09-15", 0.8884],
-    ]);
+    const ratios = calculateRatio(vix, vix3m);
+    expect(ratios.map((point) => point.tradingDate)).toEqual(["2026-09-11", "2026-09-14", "2026-09-15"]);
+    expect(ratios[0]?.ratio).toBeCloseTo(15.84 / 18.6, 12);
+    expect(ratios[1]?.ratio).toBeCloseTo(17.1 / 19.28, 12);
+    expect(ratios[2]?.ratio).toBeCloseTo(17.2 / 19.36, 12);
   });
 
   it("ignores missing values and invalid dates and sorts unique observations", () => {

@@ -12,6 +12,8 @@ const INSTRUMENT_LABELS: Record<InstrumentSymbol, string> = {
   IEF: "7-10 Year Treasuries (IEF)",
   DBC: "Commodities (DBC)",
   GLD: "Gold (GLD)",
+  "HG=F": "Copper Futures (HG=F)",
+  "GC=F": "Gold Futures (GC=F)",
   USO: "Oil (USO)",
   SLV: "Silver (SLV)",
   UNG: "Natural Gas (UNG)",

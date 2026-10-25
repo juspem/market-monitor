@@ -17,7 +17,7 @@ describe("teemojen luettavuus", () => {
       const block = css.slice(css.indexOf(`${selector} {`)).split("}")[0];
       const colors = Object.fromEntries([...block.matchAll(/--([\w-]+): (#[a-f0-9]{6})/g)].map((match) => [match[1], match[2]]));
       const pairs = [
-        ...["text", "muted", "secondary", "positive", "negative"].flatMap((text) => ["surface", "page"].map((background) => [text, background])),
+        ...["text", "muted", "secondary", "positive", "negative", "accent"].flatMap((text) => ["surface", "page"].map((background) => [text, background])),
         ["chart-text", "chart-background"], ["selected-text", "text"],
       ];
       for (const [text, background] of pairs) {

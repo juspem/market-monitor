@@ -6,6 +6,8 @@ export const INDICATOR_INSTRUMENTS = [
 	"IEF",
 	"DBC",
 	"GLD",
+	"HG=F",
+	"GC=F",
 	"USO",
 	"SLV",
 	"UNG",

@@ -25,6 +25,8 @@ const INDEX_LABELS: Record<InstrumentSymbol, string> = {
   IEF: "7-10 Year Treasuries (IEF)",
   DBC: "Commodities (DBC)",
   GLD: "Gold (GLD)",
+  "HG=F": "Copper Futures (HG=F)",
+  "GC=F": "Gold Futures (GC=F)",
   USO: "Oil (USO)",
   SLV: "Silver (SLV)",
   UNG: "Natural Gas (UNG)",
@@ -298,7 +300,7 @@ export function Dashboard() {
                           {numerator?.source === denominator?.source ? numerator?.source : `${numerator?.source} / ${denominator?.source}`}
                           {` · ${visibleRatio.length} matched daily observations · ${visibleRatio[0].tradingDate} to ${visibleRatio.at(-1)!.tradingDate}`}
                         </p>}
-                        <RatioChart label={definition.label} points={visibleRatio} referenceValue={definition.id === "vix-vix3m" ? 1 : undefined} />
+                        <RatioChart label={definition.label} points={visibleRatio} precision={definition.id === "copper-gold" ? 6 : 4} referenceValue={definition.id === "vix-vix3m" ? 1 : undefined} />
                       </section>
                     );
                   })}

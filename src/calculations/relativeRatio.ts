@@ -23,7 +23,7 @@ export function calculateRatio(
     return [{
       timestamp: point.timestamp,
       tradingDate: point.tradingDate,
-      ratio: Number((point.close / matchingPoint.close).toFixed(4)),
+      ratio: point.close / matchingPoint.close,
     }];
   });
 }
